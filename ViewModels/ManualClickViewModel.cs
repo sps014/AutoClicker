@@ -69,7 +69,7 @@ public partial class ManualClickViewModel:ObservableObject
         WindowHelper.BringToFront(window.TryGetPlatformHandle().Handle);
     }
 
-    private void MoveUp(ManualClickItem item)
+    public void MoveUp(ManualClickItem item)
     {
         var index = ManualClickItems.IndexOf(item);
 
@@ -80,7 +80,7 @@ public partial class ManualClickViewModel:ObservableObject
         ManualClickItems.Insert(index-1,item);
 
     }
-    private void MoveDown(ManualClickItem item)
+    public void MoveDown(ManualClickItem item)
     {
         var index = ManualClickItems.IndexOf(item);
 
@@ -91,12 +91,14 @@ public partial class ManualClickViewModel:ObservableObject
         ManualClickItems.Insert(index + 1, item);
     }
 
-    private void Delete(ManualClickItem item)
+    [RelayCommand]
+    public void Delete(ManualClickItem item)
     {
         ManualClickItems.Remove(item);
     }
 
-    private void DeleteAll()
+    [RelayCommand]
+    public void DeleteAll()
     {
         ManualClickItems.Clear();
     }

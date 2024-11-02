@@ -1,0 +1,20 @@
+<suki:SukiWindow xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:suki="https://github.com/kikipoulet/SukiUI"
+		mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="AutoClicker.MainWindow"
+        Title="AutoClicker">
+	<Grid RowDefinitions="150,*">
+		<suki:GlassCard Classes="Accent" Margin="10">
+			<suki:GroupBox Header="Select the desired operation Mode">
+				<StackPanel Orientation="Horizontal" Spacing="20">
+					<Button>Record</Button>
+					<Button>Manual</Button>
+				</StackPanel>
+			</suki:GroupBox>
+		</suki:GlassCard>
+		<Grid></Grid>
+	</Grid>
+</suki:SukiWindow>

@@ -1,0 +1,65 @@
+<suki:SukiWindow xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:suki="https://github.com/kikipoulet/SukiUI"
+		xmlns:vm="using:AutoClicker.ViewModels"
+		mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+		x:DataType="vm:ManualClickViewModel"
+        x:Class="AutoClicker.Views.ManualClickWindow"
+        Title="AutoClicker">
+	<Grid RowDefinitions="60,*">
+		<StackPanel Orientation="Horizontal">
+			<NumericUpDown Height="36" suki:NumericUpDownExtensions.Unit="Times (repeat)" Value="{Binding RepeatCount}" />
+			<NumericUpDown Height="36" suki:NumericUpDownExtensions.Unit="ms (Delay)" Value="{Binding Delay}" />
+			<ComboBox Height="36" SelectedIndex="{Binding ManualOperationMode}">
+				<ComboBoxItem>Left Click</ComboBoxItem>
+				<ComboBoxItem>Right Click</ComboBoxItem>
+				<ComboBoxItem>Keystroke</ComboBoxItem>
+			</ComboBox>
+			<Button Height="36" Classes="Flat Primary" Margin="20 0" HorizontalAlignment="Right" Command="{Binding StartCapturingMouseCommand}" Content="{Binding StartCaptureButtonText}"></Button>
+			<Button Height="36" Classes="Flat Accent" HorizontalAlignment="Right" Command="{Binding AddCapturedPointCommand}">Add Captured Point</Button>
+			<Label Content="{Binding ClickPosition}" VerticalAlignment="Center"></Label>
+		</StackPanel>
+		<suki:GlassCard Classes="Accent" Margin="10" Grid.Row="1">
+			<Grid RowDefinitions="*">
+				<DataGrid Margin="20" 
+						  ItemsSource="{Binding ManualClickItems}"
+          GridLinesVisibility="All"
+          BorderThickness="1" BorderBrush="Gray">
+					<DataGrid.Columns>
+						<DataGridTextColumn Header="X"
+						Binding="{Binding X}" />
+						<DataGridTextColumn Header="Y"
+						Binding="{Binding Y}" />
+						<DataGridTemplateColumn Header="Operation">
+							<DataTemplate>
+								<ComboBox Name="ComboBoxResponsible" SelectedIndex="{Binding OperationMode}">
+									<ComboBoxItem Content="Left"></ComboBoxItem>
+									<ComboBoxItem Content="Right"></ComboBoxItem>
+									<ComboBoxItem Content="Keystroke"></ComboBoxItem>
+								</ComboBox>
+							</DataTemplate>
+						</DataGridTemplateColumn>
+						<DataGridTextColumn Header="Delay"
+						   Binding="{Binding Delay}" />
+						<DataGridTextColumn Header="Comment" MinWidth="200" CanUserResize="True"
+												Binding="{Binding Comment}" />
+					</DataGrid.Columns>
+					<DataGrid.Styles>
+						<Style Selector="DataGridRow">
+							<Setter Property="ContextMenu">
+								<ContextMenu>
+									<MenuItem Header="Move Up" />
+									<MenuItem Header="Move Down" />
+									<MenuItem Header="Delete" />
+									<MenuItem Header="Delete All" />
+								</ContextMenu>
+							</Setter>
+						</Style>
+					</DataGrid.Styles>
+				</DataGrid>
+			</Grid>
+		</suki:GlassCard>
+	</Grid>
+</suki:SukiWindow>

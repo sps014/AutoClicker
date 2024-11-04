@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using static AutoClicker.ViewModels.ManualClickItem;
 using Point = System.Drawing.Point;
@@ -19,6 +20,9 @@ namespace AutoClicker.ViewModels;
 
 public partial class ManualClickViewModel:ObservableObject
 {
+    private CancellationTokenSource? cancellationTokenSource;
+
+    [NotifyPropertyChangedFor(nameof(StepsDoneText))]
     [ObservableProperty]
     private int repeatCount = 1;
 
@@ -40,9 +44,25 @@ public partial class ManualClickViewModel:ObservableObject
     [ObservableProperty]
     private ManualOperationMode manualOperationMode=ManualOperationMode.Left;
 
+    public string StartBtnLabel => IsTaskRunning ? "Stop" : "Start";
+
+    [NotifyPropertyChangedFor(nameof(StartBtnLabel))]
+    [ObservableProperty]
+    private bool isTaskRunning;
+
+
+    [NotifyPropertyChangedFor(nameof(StepPercent))]
+    [NotifyPropertyChangedFor(nameof(StepsDoneText))]
+    [ObservableProperty]
+    private int stepsDone;
+
+    public float StepPercent => StepsDone * 100.0f / RepeatCount;
+
+    public string StepsDoneText => $"{StepsDone}/{RepeatCount}";
+
+
     public ManualClickViewModel()
     {
-        ManualClickItems.Add(new() {OperationMode= ManualOperationMode.Left,Delay= 100 });
         MouseClickDetection.OnMouseClickCaptured += MouseClickDetectionOnMouseClickCaptured;
     }
 
@@ -89,6 +109,49 @@ public partial class ManualClickViewModel:ObservableObject
 
         ManualClickItems.RemoveAt(index);
         ManualClickItems.Insert(index + 1, item);
+    }
+
+    [RelayCommand]
+    public async Task StartOperation()
+    {
+        if(IsTaskRunning)
+        {
+            cancellationTokenSource?.Cancel();
+            IsTaskRunning = false;
+            StepsDone = 0;
+            return;
+        }
+
+        cancellationTokenSource = new CancellationTokenSource();
+
+        await Task.Run(async() =>
+        {
+            IsTaskRunning = true;
+            foreach(var time in Enumerable.Range(0,RepeatCount))
+            {
+                foreach(var step in ManualClickItems)
+                {
+                    if (cancellationTokenSource.IsCancellationRequested)
+                        return;
+
+                    await Task.Delay(step.Delay,cancellationTokenSource.Token);
+
+                    if (cancellationTokenSource.IsCancellationRequested)
+                        return;
+
+                    if (step.OperationMode == ManualOperationMode.Left)
+                        MouseClicker.LeftClick((uint)step.X, (uint)step.Y);
+                    else if (step.OperationMode == ManualOperationMode.Right)
+                        MouseClicker.RightClick((uint)step.X, (uint)step.Y);
+                }
+                StepsDone = time;
+            }
+
+            IsTaskRunning = false;
+            StepsDone = 0;
+
+        },cancellationTokenSource.Token);
+
     }
 
     [RelayCommand]

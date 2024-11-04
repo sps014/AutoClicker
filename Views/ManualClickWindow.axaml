@@ -8,8 +8,9 @@
 		x:DataType="vm:ManualClickViewModel"
         x:Class="AutoClicker.Views.ManualClickWindow"
         Title="AutoClicker">
-	<Grid RowDefinitions="60,*">
+	<Grid RowDefinitions="60,*,40">
 		<StackPanel Orientation="Horizontal">
+			<Button Height="36" Classes="Flat" Command="{Binding StartOperationCommand}" Margin="10" Content="{Binding StartBtnLabel}"></Button>
 			<NumericUpDown Height="36" suki:NumericUpDownExtensions.Unit="Times (repeat)" Value="{Binding RepeatCount}" />
 			<NumericUpDown Height="36" suki:NumericUpDownExtensions.Unit="ms (Delay)" Value="{Binding Delay}" />
 			<ComboBox Height="36" SelectedIndex="{Binding ManualOperationMode}">
@@ -61,5 +62,11 @@
 				</DataGrid>
 			</Grid>
 		</suki:GlassCard>
+		<Grid Grid.Row="2" ColumnDefinitions="*,60" Margin="10">
+			<ProgressBar Margin="10"
+			  ShowProgressText="False" Value="{Binding StepPercent}"/>
+			<Label Grid.Column="1" Content="{Binding StepsDoneText}" VerticalAlignment="Center" 
+				   FontWeight="Bold"/>
+		</Grid>
 	</Grid>
 </suki:SukiWindow>

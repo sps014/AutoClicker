@@ -10,7 +10,7 @@ public partial class ManualClickWindow : SukiWindow
     public ManualClickWindow()
     {
         InitializeComponent();
-        viewModel = new ManualClickViewModel();
+        viewModel = new ManualClickViewModel(this);
         DataContext = viewModel;
     }
 

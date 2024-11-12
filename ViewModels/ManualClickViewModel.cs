@@ -1,16 +1,21 @@
-﻿using AutoClicker.Native;
+﻿using AutoClicker.Models;
+using AutoClicker.Native;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using SharpHook;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using static AutoClicker.ViewModels.ManualClickItem;
@@ -25,16 +30,19 @@ public partial class ManualClickViewModel:ObservableObject
     [NotifyPropertyChangedFor(nameof(StepsDoneText))]
     [ObservableProperty]
     private int repeatCount = 1;
-
+    
     [ObservableProperty]
     ObservableCollection<ManualClickItem> manualClickItems = new();
 
+    [JsonIgnore]
     [ObservableProperty]
     private Point clickPosition = Point.Empty;
 
+    [JsonIgnore]
     [ObservableProperty]
     private string startCaptureButtonText = "Pick Point";
 
+    [JsonIgnore]
     [ObservableProperty]
     private CaptureMode captureMode = CaptureMode.Off;
 
@@ -44,31 +52,50 @@ public partial class ManualClickViewModel:ObservableObject
     [ObservableProperty]
     private ManualOperationMode manualOperationMode=ManualOperationMode.Left;
 
-    public string StartBtnLabel => IsTaskRunning ? "Stop" : "Start";
+    [JsonIgnore]
+    public string StartBtnLabel => IsTaskRunning ? "Stop (F4)" : "Start (F4)";
 
+    [JsonIgnore]
     [NotifyPropertyChangedFor(nameof(StartBtnLabel))]
     [ObservableProperty]
     private bool isTaskRunning;
 
 
+    [JsonIgnore]
     [NotifyPropertyChangedFor(nameof(StepPercent))]
     [NotifyPropertyChangedFor(nameof(StepsDoneText))]
     [ObservableProperty]
     private int stepsDone;
 
+    [JsonIgnore]
     public float StepPercent => StepsDone * 100.0f / RepeatCount;
 
+    [JsonIgnore]
     public string StepsDoneText => $"{StepsDone}/{RepeatCount}";
 
+    public Window Window { get; }
 
-    public ManualClickViewModel()
+    public ManualClickViewModel(Window window)
     {
+        GlobalKeyManager.Init();
         MouseClickDetection.OnMouseClickCaptured += MouseClickDetectionOnMouseClickCaptured;
+        GlobalKeyManager.KeyPressed += KeyPressed;
+        Window = window;
     }
+
 
     ~ManualClickViewModel()
     {
         MouseClickDetection.OnMouseClickCaptured -= MouseClickDetectionOnMouseClickCaptured;
+        GlobalKeyManager.KeyPressed -= KeyPressed;
+    }
+
+    private void KeyPressed(object? sender, KeyboardHookEventArgs e)
+    {
+        if(e.Data.KeyCode==SharpHook.Native.KeyCode.VcF4)
+        {
+            StartOperation();
+        }
     }
 
     private void MouseClickDetectionOnMouseClickCaptured(bool isLeftClick,Point clickPosition)
@@ -84,9 +111,7 @@ public partial class ManualClickViewModel:ObservableObject
         StartCaptureButtonText = "Pick Point";
         this.ClickPosition = clickPosition;
         CaptureMode = CaptureMode.Off;
-
-        var window = (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
-        WindowHelper.BringToFront(window.TryGetPlatformHandle().Handle);
+        WindowHelper.BringToFront(Window!.TryGetPlatformHandle()!.Handle);
     }
 
     public void MoveUp(ManualClickItem item)
@@ -112,7 +137,7 @@ public partial class ManualClickViewModel:ObservableObject
     }
 
     [RelayCommand]
-    public async Task StartOperation()
+    public void StartOperation()
     {
         if(IsTaskRunning)
         {
@@ -124,9 +149,10 @@ public partial class ManualClickViewModel:ObservableObject
 
         cancellationTokenSource = new CancellationTokenSource();
 
-        await Task.Run(async() =>
+        Task.Run(async() =>
         {
             IsTaskRunning = true;
+            int ct = 1;
             foreach(var time in Enumerable.Range(0,RepeatCount))
             {
                 foreach(var step in ManualClickItems)
@@ -144,7 +170,7 @@ public partial class ManualClickViewModel:ObservableObject
                     else if (step.OperationMode == ManualOperationMode.Right)
                         MouseClicker.RightClick((uint)step.X, (uint)step.Y);
                 }
-                StepsDone = time;
+                StepsDone = ct++;
             }
 
             IsTaskRunning = false;
@@ -164,6 +190,51 @@ public partial class ManualClickViewModel:ObservableObject
     public void DeleteAll()
     {
         ManualClickItems.Clear();
+    }
+
+    [RelayCommand]
+    public async Task Load()
+    {
+        var type = new FilePickerFileType("Auto Clicker");
+        type.MimeTypes = ["application/json"];
+        type.Patterns = ["*.acr"];
+
+        // Start async operation to open the dialog.
+        var files = await Window.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = "Open Steps File",
+            AllowMultiple = false,
+            FileTypeFilter = [type]
+        });
+
+        if (files.Count >= 1)
+        {
+            ManualDTO.Load(files[0].Path.LocalPath,this);
+        }
+    }
+
+    [RelayCommand]
+    public async Task Save()
+    {
+        var type = new FilePickerFileType("Auto Clicker");
+        type.MimeTypes = ["application/json"];
+        type.Patterns = ["*.acr"];
+
+
+        // Start async operation to open the dialog.
+        var files = await Window.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            Title = "Save Steps File",
+            FileTypeChoices = [type]
+        });
+
+        if (files == null)
+            return;
+
+        if (!string.IsNullOrEmpty(files?.Path.ToString()))
+        {
+            ManualDTO.Save(files!.Path.LocalPath, this);
+        }
     }
 
 

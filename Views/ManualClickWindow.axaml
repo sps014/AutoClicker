@@ -10,6 +10,12 @@
         Title="AutoClicker">
 	<Grid RowDefinitions="60,*,40">
 		<StackPanel Orientation="Horizontal">
+			<Button Height="36" Classes="Flat" Background="Transparent" Command="{Binding LoadCommand}">
+				<Image Source="avares://AutoClicker/Assets/open.png"/>
+			</Button>
+			<Button Height="36" Classes="Flat" Background="Transparent" Command="{Binding SaveCommand}">
+				<Image Source="avares://AutoClicker/Assets/save.png"/>
+			</Button>
 			<Button Height="36" Classes="Flat" Command="{Binding StartOperationCommand}" Margin="10" Content="{Binding StartBtnLabel}"></Button>
 			<NumericUpDown Height="36" suki:NumericUpDownExtensions.Unit="Times (repeat)" Value="{Binding RepeatCount}" />
 			<NumericUpDown Height="36" suki:NumericUpDownExtensions.Unit="ms (Delay)" Value="{Binding Delay}" />

@@ -43,7 +43,7 @@ public static class MouseClicker
         mouse_event(MOUSEEVENTF_LEFTUP | MOUSEEVENTF_ABSOLUTE, normalizedX, normalizedY, 0, 0);
     }
 
-    public static void RightClick(uint x, uint y)
+    public static void RightClick(double x, double y)
     {
         var screenWidth = GetSystemMetrics(0);
         // SM_CXSCREEN

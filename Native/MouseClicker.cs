@@ -9,6 +9,10 @@ namespace AutoClicker.Native;
 
 public static class MouseClicker
 {
+    //Get screen size of x or y of primary display
+    [DllImport("user32.dll")]
+    public static extern int GetSystemMetrics(int nIndex);
+
     // Import the mouse_event function from user32.dll
     [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
     public static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint cButtons, uint dwExtraInfo);
@@ -22,22 +26,39 @@ public static class MouseClicker
     static uint MOUSEEVENTF_ABSOLUTE = 0x8000;
 
 
-    public static void LeftClick(uint x, uint y)
+    public static void LeftClick(double x, double y)
     {
+        var screenWidth = GetSystemMetrics(0);
+        // SM_CXSCREEN
+        var screenHeight = GetSystemMetrics(1); // SM_CYSCREEN 
+        
+        // Normalize coordinates to the range of 0 to 65535
+        uint normalizedX = (uint)((x / screenWidth) * 65535);
+        uint normalizedY = (uint)((y / screenHeight) * 65535);
+
         // Move the mouse to the specified coordinates
-        mouse_event(MOUSEEVENTF_MOVE| MOUSEEVENTF_ABSOLUTE, x, y, 0, 0);
+        mouse_event(MOUSEEVENTF_MOVE| MOUSEEVENTF_ABSOLUTE, normalizedX, normalizedY, 0, 0);
         // Simulate left button down and up
-        mouse_event(MOUSEEVENTF_LEFTDOWN| MOUSEEVENTF_ABSOLUTE, x, y, 0, 0);
-        mouse_event(MOUSEEVENTF_LEFTUP | MOUSEEVENTF_ABSOLUTE, x, y, 0, 0);
+        mouse_event(MOUSEEVENTF_LEFTDOWN| MOUSEEVENTF_ABSOLUTE, normalizedX, normalizedY, 0, 0);
+        mouse_event(MOUSEEVENTF_LEFTUP | MOUSEEVENTF_ABSOLUTE, normalizedX, normalizedY, 0, 0);
     }
 
     public static void RightClick(uint x, uint y)
     {
+        var screenWidth = GetSystemMetrics(0);
+        // SM_CXSCREEN
+        var screenHeight = GetSystemMetrics(1); // SM_CYSCREEN 
+
+        // Normalize coordinates to the range of 0 to 65535
+        uint normalizedX = (uint)((x / screenWidth) * 65535);
+        uint normalizedY = (uint)((y / screenHeight) * 65535);
+
         // Move the mouse to the specified coordinates
-        mouse_event(MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE, x, y, 0, 0);
+        mouse_event(MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE, normalizedX, normalizedY, 0, 0);
         // Simulate right button down and up
-        mouse_event(MOUSEEVENTF_RIGHTDOWN| MOUSEEVENTF_ABSOLUTE, x, y, 0, 0);
-        mouse_event(MOUSEEVENTF_RIGHTUP| MOUSEEVENTF_ABSOLUTE, x, y, 0, 0);
+        mouse_event(MOUSEEVENTF_RIGHTDOWN | MOUSEEVENTF_ABSOLUTE, normalizedX, normalizedY, 0, 0);
+        mouse_event(MOUSEEVENTF_RIGHTUP | MOUSEEVENTF_ABSOLUTE, normalizedX, normalizedY, 0, 0);
     }
+
 }
 

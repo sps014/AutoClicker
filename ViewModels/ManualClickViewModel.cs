@@ -5,6 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SharpHook;
@@ -55,6 +56,14 @@ public partial class ManualClickViewModel : ObservableObject
     [ObservableProperty]
     private ManualOperationMode manualOperationMode = ManualOperationMode.Left;
 
+    public string StartStopRecordingText => IsRecordingMouseClicks ? "Stop Recording (F6)" : "Start Recording";
+    public Brush StartStopRecordingColor => new SolidColorBrush(IsRecordingMouseClicks ? Colors.DeepPink : Colors.DodgerBlue);
+
+    [NotifyPropertyChangedFor(nameof(StartStopRecordingColor))]
+    [NotifyPropertyChangedFor(nameof(StartStopRecordingText))]
+    [ObservableProperty]
+    private bool isRecordingMouseClicks = false;
+
     [JsonIgnore]
     public string StartBtnLabel => IsTaskRunning ? "Stop (F4)" : "Start (F4)";
 
@@ -79,6 +88,8 @@ public partial class ManualClickViewModel : ObservableObject
 
     public Window Window { get; }
 
+    private Stopwatch stopwatch = new();
+
     public ManualClickViewModel(Window window)
     {
         GlobalKeyManager.Init();
@@ -101,6 +112,10 @@ public partial class ManualClickViewModel : ObservableObject
         {
             StartOperation();
         }
+        if (e.Data.KeyCode == SharpHook.Native.KeyCode.VcF6)
+        {
+            RecordingMousePositions();
+        }
     }
 
     private void MouseClickDetectionOnMouseClickCaptured(bool isLeftClick, Point clickPosition)
@@ -111,8 +126,29 @@ public partial class ManualClickViewModel : ObservableObject
             return;
         }
 
-        MouseClickDetection.UnsetHook();
 
+        if (IsRecordingMouseClicks)
+        {
+            Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                var time = stopwatch.ElapsedMilliseconds;
+                ManualClickItems.Add(new ManualClickItem()
+                {
+                    Comment = "",
+                    Delay = (int)time,
+                    OperationMode = ManualOperationMode.Left,
+                    X = clickPosition.X,
+                    Y = clickPosition.Y,
+                });
+                stopwatch.Restart();
+            });
+            return;
+        }
+
+
+
+        //in capture single point mode
+        MouseClickDetection.UnsetHook();
         this.ClickPosition = clickPosition;
         CaptureMode = CaptureMode.Off;
         WindowHelper.BringToFront(Window!.TryGetPlatformHandle()!.Handle);
@@ -181,6 +217,23 @@ public partial class ManualClickViewModel : ObservableObject
             StepsDone = 0;
 
         }, cancellationTokenSource.Token);
+
+    }
+
+    [RelayCommand]
+    public void RecordingMousePositions()
+    {
+        if (IsRecordingMouseClicks)
+        {
+            stopwatch.Stop();
+            MouseClickDetection.UnsetHook();
+            IsRecordingMouseClicks = false;
+            return;
+        }
+
+        MouseClickDetection.SetHook();
+        IsRecordingMouseClicks = true;
+        stopwatch.Start();
 
     }
 

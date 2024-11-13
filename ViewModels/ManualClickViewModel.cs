@@ -166,9 +166,9 @@ public partial class ManualClickViewModel:ObservableObject
                         return;
 
                     if (step.OperationMode == ManualOperationMode.Left)
-                        MouseClicker.LeftClick((uint)step.X, (uint)step.Y);
+                        MouseClicker.LeftClick((short)step.X, (short)step.Y);
                     else if (step.OperationMode == ManualOperationMode.Right)
-                        MouseClicker.RightClick((uint)step.X, (uint)step.Y);
+                        MouseClicker.RightClick((short)step.X, (short)step.Y);
                 }
                 StepsDone = ct++;
             }

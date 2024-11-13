@@ -4,6 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:suki="https://github.com/kikipoulet/SukiUI"
 		xmlns:vm="using:AutoClicker.ViewModels"
+        xmlns:controls="clr-namespace:HyperText.Avalonia.Controls;assembly=HyperText.Avalonia"
 		x:DataType="vm:MainWindowViewModel"
 		mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="500" CanResize="False"
         x:Class="AutoClicker.MainWindow" MaxHeight="500" MaxWidth="700"
@@ -20,7 +21,7 @@
 		<Grid Grid.Row="1" Margin="10">
 			<StackPanel Orientation="Vertical">
 				<TextBlock  FontWeight="Bold">Windows App Driver:"</TextBlock>
-				<TextBlock TextWrapping="Wrap">Work with direct UI elements of native windows App, grab and interact with them. This works only on windows, and offer advance UI step recording feature powered by WinAppDriver"</TextBlock>
+				<TextBlock TextWrapping="Wrap">Work with direct UI elements of native windows App, grab and interact with them. This works only on windows, and offer advance UI step recording feature powered by WinAppDriver. It also require WinAppDriver latest pre-release version to be installed."</TextBlock>
 				<Grid Height="40"></Grid>
 				<TextBlock FontWeight="Bold">Semi-Manual-Record Testing:</TextBlock>
 				<TextBlock TextWrapping="Wrap">This is cross platform on Windows, and offers an advanced UI step recording feature powered by WinAppDriver</TextBlock>
@@ -31,7 +32,9 @@
 					IsClosable="False"
 					IsOpen="True"
 					Severity="Error"
-					Message="Windows App Driver is supported on windows Only" />
+					Message="{Binding Message}" />
+				<controls:Hyperlink IsVisible="{Binding ShowLink}" Alias="Download WinAppDriver" Url="https://github.com/microsoft/WinAppDriver/releases/download/v1.2.99/WindowsApplicationDriver-1.2.99-win-x64.exe"
+										Command="{Binding OpenUrlCommand}"/>
 			</StackPanel>
 		</Grid>
 	</Grid>

@@ -14,9 +14,6 @@ namespace AutoClicker.Native;
 
 public static class MouseClickDetection
 {
-    private const int WH_MOUSE_LL = 14;
-    private const int WM_LBUTTONDOWN = 0x0201;
-    private static IntPtr _hookID = IntPtr.Zero;
 
     public delegate void OnMouseClickCapturedHandler(MouseHookEventArgs args, Point clickPosition);
     public static event OnMouseClickCapturedHandler? OnMouseClickCaptured;

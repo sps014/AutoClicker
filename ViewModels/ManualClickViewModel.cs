@@ -36,6 +36,9 @@ public partial class ManualClickViewModel : ObservableObject
     [ObservableProperty]
     ObservableCollection<ManualClickItem> manualClickItems = new();
 
+    [ObservableProperty]
+    private int totalSteps;
+
     [JsonIgnore]
     [ObservableProperty]
     private Point clickPosition = Point.Empty;
@@ -56,7 +59,7 @@ public partial class ManualClickViewModel : ObservableObject
     [ObservableProperty]
     private ManualOperationMode manualOperationMode = ManualOperationMode.Left;
 
-    public string StartStopRecordingText => IsRecordingMouseClicks ? "Stop Recording (F6)" : "Start Recording";
+    public string StartStopRecordingText => IsRecordingMouseClicks ? "Stop Recording (F6)" : "Start Recording (F6)";
     public Brush StartStopRecordingColor => new SolidColorBrush(IsRecordingMouseClicks ? Colors.DeepPink : Colors.DodgerBlue);
 
     [NotifyPropertyChangedFor(nameof(StartStopRecordingColor))]
@@ -96,9 +99,14 @@ public partial class ManualClickViewModel : ObservableObject
         MouseClickDetection.Init(window);
         MouseClickDetection.OnMouseClickCaptured += MouseClickDetectionOnMouseClickCaptured;
         GlobalKeyManager.KeyPressed += KeyPressed;
+        ManualClickItems.CollectionChanged += ManualClickItemsCollectionChanged;
         Window = window;
     }
 
+    private void ManualClickItemsCollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    {
+        TotalSteps = ManualClickItems.Count;
+    }
 
     ~ManualClickViewModel()
     {

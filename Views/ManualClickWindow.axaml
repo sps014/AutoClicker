@@ -8,37 +8,64 @@
 		x:DataType="vm:ManualClickViewModel"
         x:Class="AutoClicker.Views.ManualClickWindow"
         Title="AutoClicker">
-	<Grid RowDefinitions="60,*,40">
-		<StackPanel Orientation="Horizontal">
+	<Grid RowDefinitions="60,*,50">
+		<Grid ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
 
-			<Button Height="40" Classes="Flat" Background="Transparent" Command="{Binding LoadCommand}">
+			<Button Height="40" Grid.Column="0" Classes="Flat" Background="Transparent" Command="{Binding LoadCommand}">
 				<StackPanel Orientation="Horizontal">
 					<Image Source="avares://AutoClicker/Assets/open.png"/>
 					<Label VerticalAlignment="Top">Open</Label>
 				</StackPanel>
 				
 			</Button>
-			<Button Height="40" Classes="Flat" Background="Transparent" Command="{Binding SaveCommand}">
+			<Button Height="40"  Grid.Column="1" Classes="Flat" Background="Transparent" Command="{Binding SaveCommand}">
 				<StackPanel Orientation="Horizontal">
 					<Image Source="avares://AutoClicker/Assets/save.png"/>
 					<Label VerticalAlignment="Top">Save</Label>
 				</StackPanel>
 
 			</Button>
-			<Button Height="36" Classes="Flat" Command="{Binding RecordingMousePositionsCommand}" Background="{Binding StartStopRecordingColor}" Margin="10" Content="{Binding StartStopRecordingText}"></Button>
-
-			<Button Height="36" Classes="Flat" Command="{Binding StartOperationCommand}" Background="{Binding StartStopButtonColor}" Margin="10" Content="{Binding StartBtnLabel}"></Button>
-			<NumericUpDown Height="36" suki:NumericUpDownExtensions.Unit="Times (repeat)" Value="{Binding RepeatCount}" />
-			<NumericUpDown Height="36" suki:NumericUpDownExtensions.Unit="ms (Delay)" Value="{Binding Delay}" />
-			<ComboBox Height="36" SelectedIndex="{Binding ManualOperationMode}">
+			
+			<Button Height="40" Grid.Column="2" Classes="Flat Primary" Margin="20 0" Background="Transparent"
+					HorizontalAlignment="Right" Command="{Binding StartCapturingMouseCommand}">
+				<StackPanel Orientation="Horizontal">
+					<Image Source="avares://AutoClicker/Assets/pointer.png"/>
+					<Label Content="{Binding StartCaptureButtonText}"/>
+				</StackPanel>
+			</Button>
+			
+			<Button Height="40" Grid.Column="3" Classes="Flat Accent" Background="Transparent"
+					HorizontalAlignment="Right" Command="{Binding AddCapturedPointCommand}">
+				<StackPanel Orientation="Horizontal">
+					<Image Source="avares://AutoClicker/Assets/add.png"/>
+					<Label Content="Add Captured Point"/>
+				</StackPanel>
+			</Button>
+			
+			
+			<NumericUpDown Height="36" Grid.Column="4" suki:NumericUpDownExtensions.Unit="Times (repeat)" Value="{Binding RepeatCount}" />
+			<NumericUpDown Height="36" Grid.Column="5" suki:NumericUpDownExtensions.Unit="ms (Delay)" Value="{Binding Delay}" />
+			<ComboBox Height="36" Grid.Column="6" SelectedIndex="{Binding ManualOperationMode}">
 				<ComboBoxItem>Left Click</ComboBoxItem>
 				<ComboBoxItem>Right Click</ComboBoxItem>
 				<ComboBoxItem>Keystroke</ComboBoxItem>
 			</ComboBox>
-			<Button Height="36" Classes="Flat Primary" Margin="20 0" HorizontalAlignment="Right" Command="{Binding StartCapturingMouseCommand}" Content="{Binding StartCaptureButtonText}"></Button>
-			<Button Height="36" Classes="Flat Accent" HorizontalAlignment="Right" Command="{Binding AddCapturedPointCommand}">Add Captured Point</Button>
-			<Label Content="{Binding ClickPosition}" VerticalAlignment="Center"></Label>
-		</StackPanel>
+			
+			<Button Height="40" Grid.Column="7" Classes="Flat" Background="{Binding StartStopRecordingColor}" Command="{Binding RecordingMousePositionsCommand}" Margin="10">
+				<StackPanel Orientation="Horizontal">
+					<Image Source="avares://AutoClicker/Assets/recording.png"/>
+					<Label Content="{Binding StartStopRecordingText}"/>
+				</StackPanel>
+			</Button>
+
+			<Button Height="40" Classes="Flat" Grid.Column="8" Command="{Binding StartOperationCommand}" Background="{Binding StartStopButtonColor}" Margin="10">
+				<StackPanel Orientation="Horizontal">
+					<Image Source="avares://AutoClicker/Assets/run.png"/>
+					<Label Content="{Binding StartBtnLabel}"/>
+				</StackPanel>
+			</Button>
+			
+		</Grid>
 		<suki:GlassCard Classes="Accent" Margin="10" Grid.Row="1">
 			<Grid RowDefinitions="*">
 				<DataGrid Margin="20" SelectionMode="Single" 
@@ -62,7 +89,7 @@
 						</DataGridTemplateColumn>
 						<DataGridTextColumn Header="Delay"
 						   Binding="{Binding Delay}" />
-						<DataGridTextColumn Header="Comment" MinWidth="200" CanUserResize="True"
+						<DataGridTextColumn Header="Comment" MinWidth="500" CanUserResize="True"
 												Binding="{Binding Comment}" />
 					</DataGrid.Columns>
 					<DataGrid.Styles>
@@ -80,10 +107,26 @@
 				</DataGrid>
 			</Grid>
 		</suki:GlassCard>
-		<Grid Grid.Row="2" ColumnDefinitions="*,60" Margin="10">
-			<ProgressBar Margin="10"
+		<Grid Grid.Row="2" ColumnDefinitions="Auto,Auto,Auto,*,60,Auto,Auto" Margin="10">
+			
+			<Label Content="Position:" VerticalAlignment="Center" Grid.Column="0"
+				FontWeight="Bold"/>
+			
+			<Label Content="{Binding ClickPosition}" VerticalAlignment="Center" Grid.Column="1"/>
+
+
+			<Label Grid.Column="2" Content="Progress:" VerticalAlignment="Center"
+				   FontWeight="Bold"/>
+			
+			<ProgressBar Margin="10" Grid.Column="3"
 			  ShowProgressText="False" Value="{Binding StepPercent}"/>
-			<Label Grid.Column="1" Content="{Binding StepsDoneText}" VerticalAlignment="Center" 
+			<Label Grid.Column="4" Content="{Binding StepsDoneText}" VerticalAlignment="Center" 
+				   FontWeight="Bold"/>
+
+			<Label Content="Total Steps:" VerticalAlignment="Center" Grid.Column="5"
+				   FontWeight="Bold"/>
+
+			<Label Grid.Column="6" Content="{Binding TotalSteps}" VerticalAlignment="Center"
 				   FontWeight="Bold"/>
 		</Grid>
 	</Grid>

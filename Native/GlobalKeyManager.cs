@@ -15,7 +15,7 @@ namespace AutoClicker.Native;
 
 public static class GlobalKeyManager
 {
-    static SimpleReactiveGlobalHook hook= new SimpleReactiveGlobalHook();
+    internal static SimpleReactiveGlobalHook hook = new SimpleReactiveGlobalHook();
 
     public static void Init()
     {
@@ -31,6 +31,6 @@ public static class GlobalKeyManager
 
     private static void OnKeyPressed(KeyboardHookEventArgs args)
     {
-        KeyPressed?.Invoke(null,args);
+        KeyPressed?.Invoke(null, args);
     }
 }

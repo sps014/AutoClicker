@@ -23,14 +23,14 @@ using Point = System.Drawing.Point;
 
 namespace AutoClicker.ViewModels;
 
-public partial class ManualClickViewModel:ObservableObject
+public partial class ManualClickViewModel : ObservableObject
 {
     private CancellationTokenSource? cancellationTokenSource;
 
     [NotifyPropertyChangedFor(nameof(StepsDoneText))]
     [ObservableProperty]
     private int repeatCount = 1;
-    
+
     [ObservableProperty]
     ObservableCollection<ManualClickItem> manualClickItems = new();
 
@@ -50,7 +50,7 @@ public partial class ManualClickViewModel:ObservableObject
     private int delay = 100;
 
     [ObservableProperty]
-    private ManualOperationMode manualOperationMode=ManualOperationMode.Left;
+    private ManualOperationMode manualOperationMode = ManualOperationMode.Left;
 
     [JsonIgnore]
     public string StartBtnLabel => IsTaskRunning ? "Stop (F4)" : "Start (F4)";
@@ -78,6 +78,7 @@ public partial class ManualClickViewModel:ObservableObject
     public ManualClickViewModel(Window window)
     {
         GlobalKeyManager.Init();
+        MouseClickDetection.Init(window);
         MouseClickDetection.OnMouseClickCaptured += MouseClickDetectionOnMouseClickCaptured;
         GlobalKeyManager.KeyPressed += KeyPressed;
         Window = window;
@@ -92,13 +93,13 @@ public partial class ManualClickViewModel:ObservableObject
 
     private void KeyPressed(object? sender, KeyboardHookEventArgs e)
     {
-        if(e.Data.KeyCode==SharpHook.Native.KeyCode.VcF4)
+        if (e.Data.KeyCode == SharpHook.Native.KeyCode.VcF4)
         {
             StartOperation();
         }
     }
 
-    private void MouseClickDetectionOnMouseClickCaptured(bool isLeftClick,Point clickPosition)
+    private void MouseClickDetectionOnMouseClickCaptured(bool isLeftClick, Point clickPosition)
     {
 
         if (!isLeftClick)
@@ -118,11 +119,11 @@ public partial class ManualClickViewModel:ObservableObject
     {
         var index = ManualClickItems.IndexOf(item);
 
-        if(index <=0)
+        if (index <= 0)
             return;
 
         ManualClickItems.RemoveAt(index);
-        ManualClickItems.Insert(index-1,item);
+        ManualClickItems.Insert(index - 1, item);
 
     }
     public void MoveDown(ManualClickItem item)
@@ -139,7 +140,7 @@ public partial class ManualClickViewModel:ObservableObject
     [RelayCommand]
     public void StartOperation()
     {
-        if(IsTaskRunning)
+        if (IsTaskRunning)
         {
             cancellationTokenSource?.Cancel();
             IsTaskRunning = false;
@@ -149,18 +150,18 @@ public partial class ManualClickViewModel:ObservableObject
 
         cancellationTokenSource = new CancellationTokenSource();
 
-        Task.Run(async() =>
+        Task.Run(async () =>
         {
             IsTaskRunning = true;
             int ct = 1;
-            foreach(var time in Enumerable.Range(0,RepeatCount))
+            foreach (var time in Enumerable.Range(0, RepeatCount))
             {
-                foreach(var step in ManualClickItems)
+                foreach (var step in ManualClickItems)
                 {
                     if (cancellationTokenSource.IsCancellationRequested)
                         return;
 
-                    await Task.Delay(step.Delay,cancellationTokenSource.Token);
+                    await Task.Delay(step.Delay, cancellationTokenSource.Token);
 
                     if (cancellationTokenSource.IsCancellationRequested)
                         return;
@@ -176,7 +177,7 @@ public partial class ManualClickViewModel:ObservableObject
             IsTaskRunning = false;
             StepsDone = 0;
 
-        },cancellationTokenSource.Token);
+        }, cancellationTokenSource.Token);
 
     }
 
@@ -209,7 +210,7 @@ public partial class ManualClickViewModel:ObservableObject
 
         if (files.Count >= 1)
         {
-            ManualDTO.Load(files[0].Path.LocalPath,this);
+            ManualDTO.Load(files[0].Path.LocalPath, this);
         }
     }
 
@@ -242,7 +243,7 @@ public partial class ManualClickViewModel:ObservableObject
     [RelayCommand]
     public async Task StartCapturingMouse()
     {
-        StartCaptureButtonText = CaptureMode==CaptureMode.On?"Pick Point": "Stop Picking Point";
+        StartCaptureButtonText = CaptureMode == CaptureMode.On ? "Pick Point" : "Stop Picking Point";
         await Task.Delay(100);
 
         if (CaptureMode == CaptureMode.Off)
@@ -260,15 +261,15 @@ public partial class ManualClickViewModel:ObservableObject
     public async Task AddCapturedPoint()
     {
         //stop the capturing if its in progress
-        if(CaptureMode==CaptureMode.On)
+        if (CaptureMode == CaptureMode.On)
         {
             await StartCapturingMouse();
         }
 
         ManualClickItems.Add(new ManualClickItem()
         {
-            Delay=Delay,
-            OperationMode=ManualOperationMode,
+            Delay = Delay,
+            OperationMode = ManualOperationMode,
             X = ClickPosition.X,
             Y = ClickPosition.Y,
         });
@@ -276,7 +277,7 @@ public partial class ManualClickViewModel:ObservableObject
 }
 public record ManualClickItem
 {
-    public int X  { get; set; }
+    public int X { get; set; }
     public int Y { get; set; }
     public ManualOperationMode OperationMode { get; set; }
     public int Delay { get; set; }

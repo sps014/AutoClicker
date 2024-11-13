@@ -3,6 +3,7 @@ using AutoClicker.Native;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -38,11 +39,13 @@ public partial class ManualClickViewModel : ObservableObject
     [ObservableProperty]
     private Point clickPosition = Point.Empty;
 
-    [JsonIgnore]
-    [ObservableProperty]
-    private string startCaptureButtonText = "Pick Point";
+    public Brush StartStopButtonColor => new SolidColorBrush(IsTaskRunning ? Colors.Red : Colors.Green);
 
     [JsonIgnore]
+    public string StartCaptureButtonText => CaptureMode == CaptureMode.Off ? "Pick Point" : "Stop Picking Point";
+
+    [JsonIgnore]
+    [NotifyPropertyChangedFor(nameof(StartCaptureButtonText))]
     [ObservableProperty]
     private CaptureMode captureMode = CaptureMode.Off;
 
@@ -57,6 +60,7 @@ public partial class ManualClickViewModel : ObservableObject
 
     [JsonIgnore]
     [NotifyPropertyChangedFor(nameof(StartBtnLabel))]
+    [NotifyPropertyChangedFor(nameof(StartStopButtonColor))]
     [ObservableProperty]
     private bool isTaskRunning;
 
@@ -109,7 +113,6 @@ public partial class ManualClickViewModel : ObservableObject
 
         MouseClickDetection.UnsetHook();
 
-        StartCaptureButtonText = "Pick Point";
         this.ClickPosition = clickPosition;
         CaptureMode = CaptureMode.Off;
         WindowHelper.BringToFront(Window!.TryGetPlatformHandle()!.Handle);
@@ -243,7 +246,6 @@ public partial class ManualClickViewModel : ObservableObject
     [RelayCommand]
     public async Task StartCapturingMouse()
     {
-        StartCaptureButtonText = CaptureMode == CaptureMode.On ? "Pick Point" : "Stop Picking Point";
         await Task.Delay(100);
 
         if (CaptureMode == CaptureMode.Off)

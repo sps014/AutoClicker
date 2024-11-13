@@ -16,7 +16,7 @@
 			<Button Height="36" Classes="Flat" Background="Transparent" Command="{Binding SaveCommand}">
 				<Image Source="avares://AutoClicker/Assets/save.png"/>
 			</Button>
-			<Button Height="36" Classes="Flat" Command="{Binding StartOperationCommand}" Margin="10" Content="{Binding StartBtnLabel}"></Button>
+			<Button Height="36" Classes="Flat" Command="{Binding StartOperationCommand}" Background="{Binding StartStopButtonColor}" Margin="10" Content="{Binding StartBtnLabel}"></Button>
 			<NumericUpDown Height="36" suki:NumericUpDownExtensions.Unit="Times (repeat)" Value="{Binding RepeatCount}" />
 			<NumericUpDown Height="36" suki:NumericUpDownExtensions.Unit="ms (Delay)" Value="{Binding Delay}" />
 			<ComboBox Height="36" SelectedIndex="{Binding ManualOperationMode}">

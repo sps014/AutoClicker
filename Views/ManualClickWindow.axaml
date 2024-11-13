@@ -33,10 +33,11 @@
 		</StackPanel>
 		<suki:GlassCard Classes="Accent" Margin="10" Grid.Row="1">
 			<Grid RowDefinitions="*">
-				<DataGrid Margin="20" SelectionMode="Single"
+				<DataGrid Margin="20" SelectionMode="Single" 
+						  CanUserResizeColumns="True" CanUserSortColumns="True" 
+						  HeadersVisibility="All"
 						  ItemsSource="{Binding ManualClickItems}"
-          GridLinesVisibility="All"
-          BorderThickness="1" BorderBrush="Gray">
+						  GridLinesVisibility="All">
 					<DataGrid.Columns>
 						<DataGridTextColumn Header="X"
 						Binding="{Binding X}" />

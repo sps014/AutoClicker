@@ -32,7 +32,7 @@ public partial class ManualClickWindow : SukiWindow
 
     private void MoveDown_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        var item = (sender as MenuItem).DataContext as ManualClickItem;
-        viewModel.MoveDown(item);
+        var item = (sender as MenuItem)!.DataContext as ManualClickItem;
+        viewModel.MoveDown(item!);
     }
 }

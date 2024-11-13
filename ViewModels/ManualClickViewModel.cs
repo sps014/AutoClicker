@@ -129,7 +129,7 @@ public partial class ManualClickViewModel : ObservableObject
                 var time = stopwatch.ElapsedMilliseconds;
                 ManualClickItems.Add(new ManualClickItem()
                 {
-                    Comment = "",
+                    Comment = $"Step {ManualClickItems.Count+1}",
                     Delay = (int)time,
                     OperationMode = isLeftClick?ManualOperationMode.Left:ManualOperationMode.Right,
                     X = clickPosition.X,

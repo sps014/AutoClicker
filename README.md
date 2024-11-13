@@ -1,6 +1,6 @@
 ﻿# AutoClicker
 Cross platform tool to simulate mouse clicks.
-![Screenshot 2024-11-13 204148](https://github.com/user-attachments/assets/1ae538cc-fd94-400f-a46d-84e71470092b)
+![Screenshot 2024-11-13 204148](https://github.com/user-attachments/assets/4eb704a9-364e-4fc4-a3e2-07c37579221c)
 
 
 #### Features

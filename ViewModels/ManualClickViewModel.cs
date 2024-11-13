@@ -65,7 +65,7 @@ public partial class ManualClickViewModel : ObservableObject
     private bool isRecordingMouseClicks = false;
 
     [JsonIgnore]
-    public string StartBtnLabel => IsTaskRunning ? "Stop (F4)" : "Start (F4)";
+    public string StartBtnLabel => IsTaskRunning ? "Stop (F4)" : "Run (F4)";
 
     [JsonIgnore]
     [NotifyPropertyChangedFor(nameof(StartBtnLabel))]
@@ -179,6 +179,12 @@ public partial class ManualClickViewModel : ObservableObject
     [RelayCommand]
     public void StartOperation()
     {
+        //stop recording mouse clicks now 
+        if(IsRecordingMouseClicks)
+        {
+            RecordingMousePositions();
+        }
+
         if (IsTaskRunning)
         {
             cancellationTokenSource?.Cancel();

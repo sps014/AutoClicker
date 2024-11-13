@@ -11,11 +11,19 @@
 	<Grid RowDefinitions="60,*,40">
 		<StackPanel Orientation="Horizontal">
 
-			<Button Height="36" Classes="Flat" Background="Transparent" Command="{Binding LoadCommand}">
-				<Image Source="avares://AutoClicker/Assets/open.png"/>
+			<Button Height="40" Classes="Flat" Background="Transparent" Command="{Binding LoadCommand}">
+				<StackPanel Orientation="Horizontal">
+					<Image Source="avares://AutoClicker/Assets/open.png"/>
+					<Label VerticalAlignment="Top">Open</Label>
+				</StackPanel>
+				
 			</Button>
-			<Button Height="36" Classes="Flat" Background="Transparent" Command="{Binding SaveCommand}">
-				<Image Source="avares://AutoClicker/Assets/save.png"/>
+			<Button Height="40" Classes="Flat" Background="Transparent" Command="{Binding SaveCommand}">
+				<StackPanel Orientation="Horizontal">
+					<Image Source="avares://AutoClicker/Assets/save.png"/>
+					<Label VerticalAlignment="Top">Save</Label>
+				</StackPanel>
+
 			</Button>
 			<Button Height="36" Classes="Flat" Command="{Binding RecordingMousePositionsCommand}" Background="{Binding StartStopRecordingColor}" Margin="10" Content="{Binding StartStopRecordingText}"></Button>
 

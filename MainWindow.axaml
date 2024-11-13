@@ -3,18 +3,36 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:suki="https://github.com/kikipoulet/SukiUI"
-		mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="AutoClicker.MainWindow"
+		xmlns:vm="using:AutoClicker.ViewModels"
+		x:DataType="vm:MainWindowViewModel"
+		mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="500" CanResize="False"
+        x:Class="AutoClicker.MainWindow" MaxHeight="500" MaxWidth="700"
         Title="AutoClicker">
 	<Grid RowDefinitions="150,*">
 		<suki:GlassCard Classes="Accent" Margin="10">
-			<suki:GroupBox Header="Select the desired operation Mode">
+			<suki:GroupBox Header="Select the desired Operation">
 				<StackPanel Orientation="Horizontal" Spacing="20">
-					<Button>Record</Button>
-					<Button>Manual</Button>
+					<Button Command="{Binding GoToWinAppDriverCommand}">Windows App Driver</Button>
+					<Button Command="{Binding GoToSemiManualCommand}">Semi-Manual-Record Testing</Button>
 				</StackPanel>
 			</suki:GroupBox>
 		</suki:GlassCard>
-		<Grid></Grid>
+		<Grid Grid.Row="1" Margin="10">
+			<StackPanel Orientation="Vertical">
+				<TextBlock  FontWeight="Bold">Windows App Driver:"</TextBlock>
+				<TextBlock TextWrapping="Wrap">Work with direct UI elements of native windows App, grab and interact with them. This works only on windows, and offer advance UI step recording feature powered by WinAppDriver"</TextBlock>
+				<Grid Height="40"></Grid>
+				<TextBlock FontWeight="Bold">Semi-Manual-Record Testing:</TextBlock>
+				<TextBlock TextWrapping="Wrap">This is cross platform on Windows, and offers an advanced UI step recording feature powered by WinAppDriver</TextBlock>
+				<Grid Height="40"></Grid>
+				<suki:InfoBar
+					IsVisible="{Binding IsWinAppDriverOpenedOnNonWindow}"
+					Title="Error"
+					IsClosable="False"
+					IsOpen="True"
+					Severity="Error"
+					Message="Windows App Driver is supported on windows Only" />
+			</StackPanel>
+		</Grid>
 	</Grid>
 </suki:SukiWindow>

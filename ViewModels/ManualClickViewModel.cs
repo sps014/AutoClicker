@@ -118,14 +118,9 @@ public partial class ManualClickViewModel : ObservableObject
         }
     }
 
-    private void MouseClickDetectionOnMouseClickCaptured(bool isLeftClick, Point clickPosition)
+    private void MouseClickDetectionOnMouseClickCaptured(MouseHookEventArgs args, Point clickPosition)
     {
-
-        if (!isLeftClick)
-        {
-            return;
-        }
-
+        var isLeftClick = args.Data.Button == SharpHook.Native.MouseButton.Button1;
 
         if (IsRecordingMouseClicks)
         {
@@ -136,7 +131,7 @@ public partial class ManualClickViewModel : ObservableObject
                 {
                     Comment = "",
                     Delay = (int)time,
-                    OperationMode = ManualOperationMode.Left,
+                    OperationMode = isLeftClick?ManualOperationMode.Left:ManualOperationMode.Right,
                     X = clickPosition.X,
                     Y = clickPosition.Y,
                 });
@@ -146,12 +141,17 @@ public partial class ManualClickViewModel : ObservableObject
         }
 
 
+        if (!isLeftClick)
+        {
+            return;
+        }
+
 
         //in capture single point mode
         MouseClickDetection.UnsetHook();
         this.ClickPosition = clickPosition;
         CaptureMode = CaptureMode.Off;
-        WindowHelper.BringToFront(Window!.TryGetPlatformHandle()!.Handle);
+        Window.Activate();
     }
 
     public void MoveUp(ManualClickItem item)
@@ -321,6 +321,7 @@ public partial class ManualClickViewModel : ObservableObject
             await StartCapturingMouse();
         }
 
+
         ManualClickItems.Add(new ManualClickItem()
         {
             Delay = Delay,
@@ -328,6 +329,7 @@ public partial class ManualClickViewModel : ObservableObject
             X = ClickPosition.X,
             Y = ClickPosition.Y,
         });
+
     }
 }
 public record ManualClickItem

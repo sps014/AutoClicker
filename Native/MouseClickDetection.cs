@@ -18,7 +18,7 @@ public static class MouseClickDetection
     private const int WM_LBUTTONDOWN = 0x0201;
     private static IntPtr _hookID = IntPtr.Zero;
 
-    public delegate void OnMouseClickCapturedHandler(bool isLeftClick, Point clickPosition);
+    public delegate void OnMouseClickCapturedHandler(MouseHookEventArgs args, Point clickPosition);
     public static event OnMouseClickCapturedHandler? OnMouseClickCaptured;
     public static bool Enabled { get; private set; } = false;
     public static Window? Window { get; private set; }
@@ -36,9 +36,10 @@ public static class MouseClickDetection
 
         var point = new Point(args.RawEvent.Mouse.X, args.RawEvent.Mouse.Y);
 
-        bool isLeftButtonOutsideApp = args.Data.Button == MouseButton.Button1 || !IsMouseClickInApp(point);
+        if (IsMouseClickInApp(point))
+            return;
 
-        OnMouseClickCaptured?.Invoke(isLeftButtonOutsideApp, isLeftButtonOutsideApp ? point : Point.Empty);
+        OnMouseClickCaptured?.Invoke(args, point);
     }
 
     public static void SetHook()
@@ -55,7 +56,8 @@ public static class MouseClickDetection
         if (Window == null)
             return false;
 
-        var rect = Window.Bounds;
+        var rect = Window.Bounds; // size of window
+        rect = new Avalonia.Rect(Window.Position.X,Window.Position.Y, rect.Width, rect.Height);// add current position
         return pt.X >= rect.Left && pt.X <= rect.Right && pt.Y >= rect.Top && pt.Y <= rect.Bottom;
     }
 }

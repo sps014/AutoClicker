@@ -28,5 +28,11 @@ public static class MouseClicker
         simulator.SimulateMouseRelease(MouseButton.Button2);
     }
 
+    public static void PressKey(KeyCode keyCode)
+    {
+        simulator.SimulateKeyPress(keyCode);
+        simulator.SimulateKeyRelease(keyCode);
+    }
+
 }
 

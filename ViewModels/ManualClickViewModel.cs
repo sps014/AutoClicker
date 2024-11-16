@@ -9,6 +9,7 @@ using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SharpHook;
+using SharpHook.Native;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -20,7 +21,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
-using static AutoClicker.ViewModels.ManualClickItem;
+using static AutoClicker.Models.ManualClickItem;
 using Point = System.Drawing.Point;
 
 namespace AutoClicker.ViewModels;
@@ -56,6 +57,7 @@ public partial class ManualClickViewModel : ObservableObject
     [ObservableProperty]
     private int delay = 100;
 
+    [NotifyPropertyChangedFor(nameof(IsKeyComboVisible))]
     [ObservableProperty]
     private ManualOperationMode manualOperationMode = ManualOperationMode.Left;
 
@@ -69,6 +71,7 @@ public partial class ManualClickViewModel : ObservableObject
 
     [JsonIgnore]
     public string StartBtnLabel => IsTaskRunning ? "Stop (F4)" : "Run (F4)";
+
 
     [JsonIgnore]
     [NotifyPropertyChangedFor(nameof(StartBtnLabel))]
@@ -89,6 +92,12 @@ public partial class ManualClickViewModel : ObservableObject
     [JsonIgnore]
     public string StepsDoneText => $"{StepsDone}/{RepeatCount}";
 
+    public bool IsKeyComboVisible=> ManualOperationMode == ManualOperationMode.KeyCode;
+
+    [ObservableProperty]
+    private string selectedKey=KeyCode.VcUndefined.ToString().TrimStart('V').TrimStart('c');
+
+    public string[] KeyNames => ManualClickItem.GetAllKeyNames;
     public Window Window { get; }
 
     private Stopwatch stopwatch = new();
@@ -124,6 +133,32 @@ public partial class ManualClickViewModel : ObservableObject
         {
             RecordingMousePositions();
         }
+
+        if(IsRecordingMouseClicks)
+        {
+            Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                var time = stopwatch.ElapsedMilliseconds;
+
+                ManualClickItems.Add(new ManualClickItem()
+                {
+                    Comment = $"Step {ManualClickItems.Count + 1}",
+                    Delay = (int)time,
+                    OperationMode =ManualOperationMode.KeyCode,
+                    X = ClickPosition.X,
+                    Y = ClickPosition.Y,
+                    KeyCodes = GetCurrentEnumNames(e.Data.KeyCode).Select(x=>x.TrimStart('V').TrimStart('c')).ToArray()
+                });
+                stopwatch.Restart();
+            });
+        }
+    }
+
+    public static List<string> GetCurrentEnumNames(KeyCode currentEnum)
+    {
+        return Enum.GetValues(currentEnum.GetType())
+            .Cast<Enum>().Where(currentEnum.HasFlag)
+            .Select(e => e.ToString()).ToList();
     }
 
     private void MouseClickDetectionOnMouseClickCaptured(MouseHookEventArgs args, Point clickPosition)
@@ -140,8 +175,8 @@ public partial class ManualClickViewModel : ObservableObject
                     Comment = $"Step {ManualClickItems.Count+1}",
                     Delay = (int)time,
                     OperationMode = isLeftClick?ManualOperationMode.Left:ManualOperationMode.Right,
-                    X = clickPosition.X,
-                    Y = clickPosition.Y,
+                    X = ClickPosition.X,
+                    Y = ClickPosition.Y,
                 });
                 stopwatch.Restart();
             });
@@ -223,6 +258,8 @@ public partial class ManualClickViewModel : ObservableObject
                         MouseClicker.LeftClick((short)step.X, (short)step.Y);
                     else if (step.OperationMode == ManualOperationMode.Right)
                         MouseClicker.RightClick((short)step.X, (short)step.Y);
+                    else if (step.OperationMode == ManualOperationMode.KeyCode)
+                        MouseClicker.PressKey(step.KeyCode);
                 }
                 StepsDone = ct++;
             }
@@ -342,22 +379,12 @@ public partial class ManualClickViewModel : ObservableObject
             OperationMode = ManualOperationMode,
             X = ClickPosition.X,
             Y = ClickPosition.Y,
+            KeyCodes = [SelectedKey]
         });
 
     }
 }
-public record ManualClickItem
-{
-    public int X { get; set; }
-    public int Y { get; set; }
-    public ManualOperationMode OperationMode { get; set; }
-    public int Delay { get; set; }
-    public string Comment { get; set; } = string.Empty;
-}
-public enum ManualOperationMode
-{
-    Left, Right, Other
-}
+
 
 public enum CaptureMode
 {

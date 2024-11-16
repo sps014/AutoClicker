@@ -9,7 +9,7 @@
         x:Class="AutoClicker.Views.ManualClickWindow"
         Title="AutoClicker">
 	<Grid RowDefinitions="60,*,50">
-		<Grid ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+		<Grid ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
 
 			<Button Height="40" Grid.Column="0" Classes="Flat" Background="Transparent" Command="{Binding LoadCommand}">
 				<StackPanel Orientation="Horizontal">
@@ -50,15 +50,18 @@
 				<ComboBoxItem>Right Click</ComboBoxItem>
 				<ComboBoxItem>Keystroke</ComboBoxItem>
 			</ComboBox>
+			<ComboBox Height="36" Grid.Column="7" ItemsSource="{Binding KeyNames}"
+					SelectedItem="{Binding SelectedKey}" IsVisible="{Binding IsKeyComboVisible}" >
+			</ComboBox>
 			
-			<Button Height="40" Grid.Column="7" Classes="Flat" Background="{Binding StartStopRecordingColor}" Command="{Binding RecordingMousePositionsCommand}" Margin="10">
+			<Button Height="40" Grid.Column="8" Classes="Flat" Background="{Binding StartStopRecordingColor}" Command="{Binding RecordingMousePositionsCommand}" Margin="10">
 				<StackPanel Orientation="Horizontal">
 					<Image Source="avares://AutoClicker/Assets/recording.png"/>
 					<Label Content="{Binding StartStopRecordingText}"/>
 				</StackPanel>
 			</Button>
 
-			<Button Height="40" Classes="Flat" Grid.Column="8" Command="{Binding StartOperationCommand}" Background="{Binding StartStopButtonColor}" Margin="10">
+			<Button Height="40" Classes="Flat" Grid.Column="9" Command="{Binding StartOperationCommand}" Background="{Binding StartStopButtonColor}" Margin="10">
 				<StackPanel Orientation="Horizontal">
 					<Image Source="avares://AutoClicker/Assets/run.png"/>
 					<Label Content="{Binding StartBtnLabel}"/>
@@ -87,6 +90,9 @@
 								</ComboBox>
 							</DataTemplate>
 						</DataGridTemplateColumn>
+						<DataGridTextColumn Header="KeyCode(s)"
+									Binding="{Binding ReadableKeyName}" />
+								
 						<DataGridTextColumn Header="Delay"
 						   Binding="{Binding Delay}" />
 						<DataGridTextColumn Header="Comment" MinWidth="500" CanUserResize="True"

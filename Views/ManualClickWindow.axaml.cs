@@ -1,3 +1,4 @@
+using AutoClicker.Models;
 using AutoClicker.ViewModels;
 using Avalonia.Controls;
 using SukiUI.Controls;

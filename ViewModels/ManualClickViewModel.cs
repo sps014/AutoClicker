@@ -175,8 +175,8 @@ public partial class ManualClickViewModel : ObservableObject
                     Comment = $"Step {ManualClickItems.Count+1}",
                     Delay = (int)time,
                     OperationMode = isLeftClick?ManualOperationMode.Left:ManualOperationMode.Right,
-                    X = ClickPosition.X,
-                    Y = ClickPosition.Y,
+                    X = clickPosition.X,
+                    Y = clickPosition.Y,
                 });
                 stopwatch.Restart();
             });

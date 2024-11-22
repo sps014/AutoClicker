@@ -2,13 +2,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="AutoClicker.App"
              xmlns:sukiUi="clr-namespace:SukiUI;assembly=SukiUI"
-			 xmlns:avalonia="clr-namespace:HyperText.Avalonia;assembly=HyperText.Avalonia"
-
              RequestedThemeVariant="Default">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
     <Application.Styles>
         <sukiUi:SukiTheme ThemeColor="Orange"  />
-		<avalonia:HyperLinkStyle/>
 	</Application.Styles>
 </Application>
